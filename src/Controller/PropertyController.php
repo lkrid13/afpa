@@ -32,7 +32,7 @@ class PropertyController extends AbstractController {
 
     
     /**
-     * @route("/biens", name="property.index")
+     * @Route("/biens", name="property.index")
      * @return Response
      */
     public function index(): Response{
@@ -64,7 +64,7 @@ class PropertyController extends AbstractController {
     }
     
     /**
-     * @route("/biens/{slug}.{id}", name="property.show", requirements={"slug": "[a-z0-9\-]*"})
+     * @Route("/biens/{slug}.{id}", name="property.show", requirements={"slug": "[a-z0-9\-]*"})
      * @param Property $property
      * @return Response
      */
