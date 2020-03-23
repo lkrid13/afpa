@@ -31,7 +31,7 @@ class AdminPropertyController extends AbstractController {
         
         $this->repository = $repository;
         $this->em = $em;
-    }
+   }
     
     /**
      * @Route("/admin", name="admin.property.index")

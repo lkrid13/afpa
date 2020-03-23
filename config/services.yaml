@@ -32,3 +32,6 @@ services:
     #    tags: ['controller.service_arguments']
     #    arguments:
     #        $twig: '@twig'
+    
+    Doctrine\Persistence\ObjectManager: '@doctrine.orm.default_entity_manager'
+    
