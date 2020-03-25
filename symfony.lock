@@ -108,8 +108,17 @@
     "egulias/email-validator": {
         "version": "2.1.17"
     },
+    "fzaninotto/faker": {
+        "version": "1.9-dev"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
+    },
+    "knplabs/knp-components": {
+        "version": "v2.3.3"
+    },
+    "knplabs/knp-paginator-bundle": {
+        "version": "5.1.x-dev"
     },
     "laminas/laminas-code": {
         "version": "3.4.1"

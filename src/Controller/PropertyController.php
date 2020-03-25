@@ -2,9 +2,13 @@
 namespace App\Controller;
 
 use App\Entity\Property;
+use App\Entity\PropertySearch;
+use App\Form\PropertySearchType;
 use App\Repository\PropertyRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 /**
@@ -35,32 +39,28 @@ class PropertyController extends AbstractController {
      * @Route("/biens", name="property.index")
      * @return Response
      */
-    public function index(): Response{
+    public function index(PaginatorInterface $paginator, Request $request): Response{
         
-// commenter après la création en base du premier bien
-//        $property = new Property();
-//        $property->setTitle('Mon premier bien')
-//                ->setPrice(200000)
-//                ->setRooms(4)
-//                ->setBedrooms(3)
-//                ->setDescription('Une petite description')
-//                ->setSurface(60)
-//                ->setFloor(4)
-//                ->setHeat(1)
-//                ->setCity('Créteil')
-//                ->setAddress('9 rue Marc Seguin')
-//                ->setPostalCode('94000');
-//        $em = $this->getDoctrine()->getManager();
-//        $em->persist($property);
-//        $em->flush();
+        // Créer une entité qui va représenter notre recherche
+        //     prix maximum, nombre de pièces
+        // Créer un formulaire
+        // gérer le traitement dans le controller (handleRequest ...)
+        // passer l'entité qui représente la recherche à la méthode findAllVisibleQuery($searchData)
         
-    //    $property = $this->repository->findAllVisible();
-    //    $property[0]->setSold(true);
-//        $em = $this->getDoctrine()->getManager();
-//        $em->flush();
-    //    $this->em->flush();
+        $search = new PropertySearch();
+        $form = $this->createForm(PropertySearchType::class, $search);
+        $form->handleRequest($request);
+        
+        $properties = $paginator->paginate(
+                $this->repository->findAllVisibleQuery($search),
+                $request->query->getInt('page', 1),
+                9);
+        
         return $this->render('property/index.html.twig',
-                ['current_menu' => 'properties']);
+                ['current_menu' => 'properties',
+                 'properties' => $properties,
+                 'form' => $form->createView()
+                ]);
     }
     
     /**
