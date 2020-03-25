@@ -40,9 +40,18 @@ class PropertyRepository extends ServiceEntityRepository
                 ->andWhere('p.surface >= :minsurface' )
                 ->setParameter('minsurface', $search->getMinSurface());
         } 
-
-        //dump($query);
-        //dump($query->getQuery());
+        if ($search->getOptions()->count() > 0){
+            $key = 0;
+            //foreach ($search->getOptions() as $key => $option) {
+            // il est plus prudent de gérer l'indice du tableau nous même
+            // quelqu'un pourrai entrer un indice non numérique dans l'url : ..&option[xsdfs]=1
+            foreach ($search->getOptions() as $option) {
+                $key++;
+                $query
+                    ->andWhere(":option$key MEMBER OF p.options")
+                    ->setParameter("option$key", $option);
+            }
+        }
         return $query->getQuery();
     }
     
