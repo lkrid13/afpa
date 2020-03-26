@@ -2,16 +2,23 @@
 
 namespace App\Entity;
 
+use Cocur\Slugify\Slugify;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Cocur\Slugify\Slugify;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as VICH;
+use function dump;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PropertyRepository")
  * @UniqueEntity("title")
+ * @VICH\Uploadable
  */
 class Property
 {
@@ -27,6 +34,19 @@ class Property
      * @ORM\Column(type="integer")
      */
     private $id;
+    
+    /**
+     * @var string|null
+     * @ORM\Column(type="string", length=255)
+     */
+    private $fileName;
+
+
+    /**
+     * @var File|null
+     * @VICH\UploadableField(mapping="property_image", fileNameProperty="fileName")
+     */
+    private $imageFile;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -97,12 +117,17 @@ class Property
     private $heat;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Option", inversedBy="properties")
+     * @ORM\ManyToMany(targetEntity="Option", inversedBy="properties")
      */
     private $options;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $updated_at;
     
     function __construct() {
-        $this->create_at = new \DateTime();
+        $this->create_at = new DateTime();
         $this->options = new ArrayCollection();
     }
 
@@ -253,12 +278,12 @@ class Property
         return $this;
     }
 
-    public function getCreateAt(): ?\DateTimeInterface
+    public function getCreateAt(): ?DateTimeInterface
     {
         return $this->create_at;
     }
 
-    public function setCreateAt(\DateTimeInterface $create_at): self
+    public function setCreateAt(DateTimeInterface $create_at): self
     {
         $this->create_at = $create_at;
 
@@ -290,6 +315,11 @@ class Property
         return $this->options;
     }
 
+    /**
+     * 
+     * @param Option $option
+     * @return self
+     */
     public function addOption(Option $option): self
     {
         if (!$this->options->contains($option)) {
@@ -300,6 +330,11 @@ class Property
         return $this;
     }
 
+    /**
+     * 
+     * @param Option $option
+     * @return self
+     */
     public function removeOption(Option $option): self
     {
         if ($this->options->contains($option)) {
@@ -309,4 +344,59 @@ class Property
 
         return $this;
     }
+    
+    /**
+     * 
+     * @return string|null
+     */
+    function getFileName(): ?string {
+        return $this->fileName;
+    }
+
+    /**
+     * 
+     * @return File|null
+     */
+    function getImageFile(): ?File {
+        return $this->imageFile;
+    }
+
+    /**
+     * 
+     * @param string|null $fileName
+     * @return self
+     */
+    function setFileName(?string $fileName): self {
+        $this->fileName = $fileName;
+        dump($fileName);
+        return $this;
+    }
+
+    /**
+     * 
+     * @param File|null|UploadedFile $imageFile
+     * @return self
+     */
+    function setImageFile(?File $imageFile): self {
+        $this->imageFile = $imageFile;
+        dump($imageFile);
+        if (null !== $imageFile){
+            $this->updated_at = new \DateTime('now');
+        }
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updated_at): self
+    {
+        $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+
 }
